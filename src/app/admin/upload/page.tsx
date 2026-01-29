@@ -8,6 +8,18 @@ import { deleteQuizAdmin } from "../actions";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Quiz type with question count
+ */
+type QuizWithCount = {
+  id: string;
+  title: string;
+  createdAt: Date;
+  _count: {
+    questions: number;
+  };
+};
+
 export default async function AdminUploadPage() {
   if (!(await isAdminAuthed())) redirect("/admin/login?next=/admin/upload");
 
@@ -62,7 +74,7 @@ question,optionA,optionB,optionC,optionD,answer,hint
                 No quizzes yet.
               </div>
             ) : (
-              quizzes.map((q) => (
+              quizzes.map((q: QuizWithCount) => (
                 <div
                   key={q.id}
                   className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-white px-4 py-3"
@@ -97,4 +109,3 @@ question,optionA,optionB,optionC,optionD,answer,hint
     </div>
   );
 }
-
