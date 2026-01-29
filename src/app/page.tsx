@@ -3,6 +3,18 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Quiz type with question count
+ */
+type QuizWithCount = {
+  id: string;
+  title: string;
+  createdAt: Date;
+  _count: {
+    questions: number;
+  };
+};
+
 export default async function Home() {
   const quizzes = await prisma.quiz.findMany({
     orderBy: { createdAt: "desc" },
@@ -24,7 +36,6 @@ export default async function Home() {
             Admin Upload
           </Link>
         </div>
-
         <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm">
           {quizzes.length === 0 ? (
             <div className="text-sm text-zinc-600">
@@ -32,7 +43,7 @@ export default async function Home() {
             </div>
           ) : (
             <div className="space-y-3">
-              {quizzes.map((q) => (
+              {quizzes.map((q: QuizWithCount) => (
                 <Link
                   key={q.id}
                   href={`/practice/${q.id}`}
