@@ -3,20 +3,16 @@ import { prisma } from "@/lib/prisma";
 import UploadForm from "./UploadForm";
 import { deleteQuizAdmin, uploadQuizAdmin } from "./actions";
 import { adminLogout } from "./login/actions";
-import { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Prisma-typed quiz with question count
+ * Infer quiz type directly from Prisma query
+ * (works with ALL Prisma versions)
  */
-type QuizWithCount = Prisma.QuizGetPayload<{
-  include: {
-    _count: {
-      select: { questions: true };
-    };
-  };
-}>;
+type QuizWithCount = Awaited<
+  ReturnType<typeof prisma.quiz.findMany>
+>[number];
 
 export default async function AdminPage() {
   const quizzes: QuizWithCount[] = await prisma.quiz.findMany({
@@ -91,7 +87,7 @@ export default async function AdminPage() {
                   No quizzes yet.
                 </div>
               ) : (
-                quizzes.map((q: QuizWithCount) => (
+                quizzes.map((q) => (
                   <div
                     key={q.id}
                     className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-white px-4 py-3"
