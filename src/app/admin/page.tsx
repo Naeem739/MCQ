@@ -7,15 +7,19 @@ import { adminLogout } from "./login/actions";
 export const dynamic = "force-dynamic";
 
 /**
- * Infer quiz type directly from Prisma query
- * (works with ALL Prisma versions)
+ * Quiz type with question count
  */
-type QuizWithCount = Awaited<
-  ReturnType<typeof prisma.quiz.findMany>
->[number];
+type QuizWithCount = {
+  id: string;
+  title: string;
+  createdAt: Date;
+  _count: {
+    questions: number;
+  };
+};
 
 export default async function AdminPage() {
-  const quizzes: QuizWithCount[] = await prisma.quiz.findMany({
+  const quizzes = await prisma.quiz.findMany({
     orderBy: { createdAt: "desc" },
     include: {
       _count: {
@@ -87,7 +91,7 @@ export default async function AdminPage() {
                   No quizzes yet.
                 </div>
               ) : (
-                quizzes.map((q) => (
+                quizzes.map((q: QuizWithCount) => (
                   <div
                     key={q.id}
                     className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-white px-4 py-3"
